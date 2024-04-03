@@ -1,8 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:note_app/controller/note_screen_controller.dart';
 import 'package:note_app/core/color_constants/color_constants.dart';
 
 class Custom_notes extends StatelessWidget {
-  const Custom_notes({super.key});
+  const Custom_notes({
+    super.key,
+    required this.title,
+    required this.description,
+    required this.date,
+    required this.colorIndex,
+    this.onDeleteTap,
+    this.onEditTap,
+    this.onShareTap,
+  });
+
+  final String title;
+  final String description;
+  final String date;
+  final int colorIndex;
+  final void Function()? onDeleteTap;
+  final void Function()? onEditTap;
+  final void Function()? onShareTap;
 
   @override
   Widget build(BuildContext context) {
@@ -11,24 +29,32 @@ class Custom_notes extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         decoration: BoxDecoration(
-            color: Color_Constants.primaycolor,
+            color: NoteScreenController.colorlist[colorIndex],
             borderRadius: BorderRadius.circular(10)),
         child: Column(
           children: [
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "gfgcvmn",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
+                  title,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 30,
+                  ),
                 ),
-                SizedBox(
-                  width: 130,
-                ),
-                Icon(Icons.edit),
-                SizedBox(
-                  width: 10,
-                ),
-                Icon(Icons.delete)
+                // SizedBox(
+                //   width: 130,
+                // ),
+                Row(
+                  children: [
+                    InkWell(onTap: onEditTap, child: Icon(Icons.edit)),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    InkWell(onTap: onDeleteTap, child: Icon(Icons.delete)),
+                  ],
+                )
               ],
             ),
             SizedBox(
@@ -38,7 +64,7 @@ class Custom_notes extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Description",
+                  description,
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
                 ),
               ],
@@ -51,11 +77,11 @@ class Custom_notes extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Text(
-                  "date",
+                  date,
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                 ),
                 SizedBox(width: 10),
-                Icon(Icons.share),
+                InkWell(onTap: onShareTap, child: Icon(Icons.share)),
               ],
             )
           ],
