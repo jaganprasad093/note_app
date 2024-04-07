@@ -12,6 +12,13 @@ class Note_screen extends StatefulWidget {
 }
 
 class _Note_screenState extends State<Note_screen> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    NoteScreenController.getInitkeys();
+    super.initState();
+  }
+
   TextEditingController titleController = TextEditingController();
   TextEditingController desController = TextEditingController();
   TextEditingController dateController = TextEditingController();
@@ -30,33 +37,33 @@ class _Note_screenState extends State<Note_screen> {
             ListView.separated(
                 physics: NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
-                itemBuilder: (context, index) => Custom_notes(
-                      date: NoteScreenController.noteList[index]["date"],
-                      description: NoteScreenController.noteList[index]["des"],
-                      title: NoteScreenController.noteList[index]["title"],
-                      colorIndex: NoteScreenController.noteList[index]
-                          ["colorIndex"],
+                itemBuilder: (context, index) {
+                  final currentkey = NoteScreenController.noteListKeys[index];
+                  final currentelement =
+                      NoteScreenController.myBox.get(currentkey);
+
+                  return Custom_notes(
+                      date: currentelement["date"],
+                      description: currentelement["des"],
+                      title: currentelement["title"],
+                      colorIndex: currentelement["colorIndex"],
                       onDeleteTap: () {
-                        NoteScreenController.deleteNote(index);
+                        NoteScreenController.deleteNote(currentkey);
                         setState(() {});
                       },
                       onEditTap: () {
-                        titleController.text =
-                            NoteScreenController.noteList[index]["title"];
-                        desController.text =
-                            NoteScreenController.noteList[index]["des"];
-                        dateController.text =
-                            NoteScreenController.noteList[index]["date"];
-                        selectedIndex =
-                            NoteScreenController.noteList[index]["colorIndex"];
+                        titleController.text = currentelement["title"];
+                        desController.text = currentelement["des"];
+                        dateController.text = currentelement["date"];
+                        selectedIndex = currentelement["colorIndex"];
                         showCustomBottomSheet(
-                            context: context, index: index, isEdit: true);
-                      },
-                    ),
+                            context: context, currentkey: index, isEdit: true);
+                      });
+                },
                 separatorBuilder: (context, index) => SizedBox(
                       height: 10,
                     ),
-                itemCount: NoteScreenController.noteList.length),
+                itemCount: NoteScreenController.noteListKeys.length),
           ],
         ),
       ),
@@ -73,7 +80,7 @@ class _Note_screenState extends State<Note_screen> {
   }
 
   Future<dynamic> showCustomBottomSheet(
-      {required BuildContext context, int? index, bool isEdit = false}) {
+      {required BuildContext context, var currentkey, bool isEdit = false}) {
     return showModalBottomSheet(
       isScrollControlled: true,
       context: context,
@@ -192,9 +199,9 @@ class _Note_screenState extends State<Note_screen> {
                     ),
                     InkWell(
                       onTap: () {
-                        if (isEdit) {
+                        if (isEdit == true) {
                           NoteScreenController.editNote(
-                              index: index!,
+                              key: currentkey,
                               title: titleController.text,
                               des: desController.text,
                               date: dateController.text,
